@@ -9,15 +9,19 @@ internal class Program
 {
     private const string ResponsesPath = "responses.json";
     private const string HelpCommand = "!help";
+    private const string LogDirectory = "Logs";
     private static DiscordSocketClient _client;
     private Dictionary<string, string> _responses;
     private readonly string LogFilePath;
 
     public Program()
     {
+        // Ensure the log directory exists
+        Directory.CreateDirectory(LogDirectory);
+
         // Generate a unique log file name based on the current date and time
         var timestamp = DateTime.Now.ToString("yyyyMMdd_HHmmss");
-        LogFilePath = $"bot_{timestamp}.log";
+        LogFilePath = Path.Combine(LogDirectory, $"bot_{timestamp}.log");
     }
 
     public static void Main(string[] args) => new Program().
