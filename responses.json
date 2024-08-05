@@ -1,0 +1,5 @@
+{
+  "command1": "Template response for Command1: [Your response here]",
+  "command2": "Template response for Command2: [Your response here]",
+  "default": "Sorry, I don't have help information for that command."
+}
