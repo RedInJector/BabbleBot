@@ -10,9 +10,9 @@ internal class Program {
     private const string ConfigPath = "config.json";
     private const string ResponsesPath = "responses.json";
     private const string HelpCommand = "!";
-    private static string DefaultResponse = "Sorry, I don't have help information for that command.";
+    private static ResponseMessage DefaultResponse = new ResponseMessage() { Messages = new [] { new Message() { Content = "Sorry, I don't have help information for that command." } } };
     private static DiscordSocketClient _client;
-    private Dictionary<string, string> _responses = new();
+    private Dictionary<string, ResponseMessage> _responses = new();
     private readonly string LogFilePath;
     private Config _config;
 
@@ -81,13 +81,13 @@ internal class Program {
         if ( message.Content.StartsWith(HelpCommand) ) {
             var command = message.Content.Substring(HelpCommand.Length).Trim();
             var response = GetHelpResponse(command.ToLower());
-            await message.Channel.SendMessageAsync(response);
+            await SendResponseMessage(message.Channel, response);
         }
     }
 
     private void LoadResponses() {
         var json = File.ReadAllText(ResponsesPath);
-        _responses = JsonConvert.DeserializeObject<Dictionary<string, string>>(json)!;
+        _responses = JsonConvert.DeserializeObject<Dictionary<string, ResponseMessage>>(json)!;
 
         // Preload values
         if ( _responses.TryGetValue("default", out var defaultResponse) ) {
@@ -95,7 +95,7 @@ internal class Program {
         }
     }
 
-    private string GetHelpResponse(string command) {
+    private ResponseMessage GetHelpResponse(string command) {
         if ( _responses.TryGetValue(command, out var response) ) {
             return response;
         } else {
@@ -107,5 +107,20 @@ internal class Program {
             }
         }
         return DefaultResponse;
+    }
+
+    private async Task SendResponseMessage(ISocketMessageChannel channel, ResponseMessage message) {
+        foreach (var msg in message.Messages) {
+            if ( msg.Content.Trim().Length > 0 ) {
+                await channel.SendMessageAsync(msg.Content);
+            }
+            if ( msg.Attachment.Length > 0 ) {
+                for ( int i = 0; i < msg.Attachment.Length; i++ ) {
+                    if ( File.Exists(msg.Attachment) ) {
+
+                    }
+                }
+            }
+        }
     }
 }
