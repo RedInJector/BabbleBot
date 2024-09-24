@@ -9,7 +9,7 @@ internal class Program {
     private const string ResponsesPath = "responses.json";
     private const string HelpCommand = "!help";
     private static DiscordSocketClient _client;
-    private Dictionary<string, string> _responses;
+    private Dictionary<string, string> _responses = new();
     private readonly string LogFilePath;
 
     public Program() {
