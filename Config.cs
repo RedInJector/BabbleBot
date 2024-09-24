@@ -2,5 +2,5 @@
 
 internal class Config
 {
-    public string Token { get; set; }
+    public string Token { get; set; } = "";
 }
