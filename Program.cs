@@ -57,6 +57,15 @@ internal class Program {
         if ( message.Author.IsBot )
             return;
 
+        // Admin commands
+        if ( message.Author.Id == 346338830011596800 || message.Author.Id == 199983920639377410 || message.Author.Id == 282909752042717194 ) {
+            if (message.Content.ToLower().Trim() == "!reload") {
+                LoadResponses();
+                await message.Channel.SendMessageAsync("Reloaded responses!");
+                return;
+            }
+        }
+
         if ( message.Content.StartsWith(HelpCommand) ) {
             var command = message.Content.Substring(HelpCommand.Length).Trim();
             var response = GetHelpResponse(command.ToLower());
