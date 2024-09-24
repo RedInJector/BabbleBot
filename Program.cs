@@ -1,6 +1,7 @@
 ﻿using Babble_Bot;
 using Discord;
 using Discord.WebSocket;
+using FuzzySharp;
 using Newtonsoft.Json;
 
 namespace BabbleBot;
@@ -97,6 +98,13 @@ internal class Program {
     private string GetHelpResponse(string command) {
         if ( _responses.TryGetValue(command, out var response) ) {
             return response;
+        } else {
+            // Slow path: Try a fuzzy search
+            foreach (var kvPair in _responses) {
+                if (Fuzz.Ratio(command, kvPair.Key) > _config.FuzzThreshold) {
+                    return kvPair.Value;
+                }
+            }
         }
         return DefaultResponse;
     }
