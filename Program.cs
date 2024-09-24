@@ -71,7 +71,7 @@ internal class Program {
 
         // Admin commands
         if ( message.Author.Id == 346338830011596800 || message.Author.Id == 199983920639377410 || message.Author.Id == 282909752042717194 ) {
-            if (message.Content.ToLower().Trim() == "!reload") {
+            if (message.Content.ToLower().Trim() == $"{HelpCommand}reload" ) {
                 LoadResponses();
                 await message.Channel.SendMessageAsync("Reloaded responses!");
                 return;
