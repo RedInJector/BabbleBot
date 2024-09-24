@@ -121,13 +121,13 @@ internal class Program {
 
     private async Task SendResponseMessage(ISocketMessageChannel channel, ResponseMessage message) {
         foreach (var msg in message.Messages) {
-            if ( msg.Content.Trim().Length > 0 ) {
+            if ( msg.Content.Trim().Length > 0 && msg.Attachment.Length == 0) {
                 await channel.SendMessageAsync(msg.Content);
             }
             if ( msg.Attachment.Length > 0 ) {
                 for ( int i = 0; i < msg.Attachment.Length; i++ ) {
                     if ( File.Exists(msg.Attachment) ) {
-
+                        await channel.SendFileAsync(Path.GetFullPath(Path.Combine("attachments", msg.Attachment)), msg.Content.Length > 0 ? msg.Content : null);
                     }
                 }
             }
