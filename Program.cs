@@ -107,7 +107,11 @@ internal class Program {
         } else {
             // Slow path: Try a fuzzy search
             foreach (var kvPair in _responses) {
-                if (Fuzz.Ratio(command, kvPair.Key) > _config.FuzzThreshold) {
+                if ( kvPair.Key == "default" ) {
+                    continue;
+                }
+                int ratio = Fuzz.Ratio(command, kvPair.Key);
+                if (ratio > _config.FuzzThreshold) {
                     return kvPair.Value;
                 }
             }
