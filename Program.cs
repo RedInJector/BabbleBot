@@ -7,7 +7,7 @@ namespace BabbleBot;
 
 internal class Program {
     private const string ResponsesPath = "responses.json";
-    private const string HelpCommand = "!help";
+    private const string HelpCommand = "!";
     private static string DefaultResponse = "Sorry, I don't have help information for that command.";
     private static DiscordSocketClient _client;
     private Dictionary<string, string> _responses = new();
@@ -57,9 +57,9 @@ internal class Program {
         if ( message.Author.IsBot )
             return;
 
-        if ( message.Content.StartsWith("!help") ) {
+        if ( message.Content.StartsWith(HelpCommand) ) {
             var command = message.Content.Substring(HelpCommand.Length).Trim();
-            var response = GetHelpResponse(command);
+            var response = GetHelpResponse(command.ToLower());
             await message.Channel.SendMessageAsync(response);
         }
     }
@@ -75,7 +75,7 @@ internal class Program {
     }
 
     private string GetHelpResponse(string command) {
-        if ( _responses.TryGetValue(command.ToLower(), out var response) ) {
+        if ( _responses.TryGetValue(command, out var response) ) {
             return response;
         }
         return DefaultResponse;
