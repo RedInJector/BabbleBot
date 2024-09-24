@@ -1,5 +1,15 @@
 {
   "command1": { "Messages": [ { "Content": "Template response for Command1: [Your response here]" } ] },
   "command2": { "Messages": [ { "Content": "Template response for Command2: [Your response here]" } ] },
-  "default": { "Messages": [ { "Content": "Sorry, I don't have help information for that command." } ] }
+  "default": { "Messages": [ { "Content": "Sorry, I don't have help information for that command." } ] },
+  "complex-example": {
+    "Messages": [
+      {
+        "Content": "This message will be sent along an image.",
+        "Attachment": "some-cool-image.png"
+      },
+      { "Content": "This message is sent after the other file." },
+      { "Attachment": "only-attachment.png" }
+    ]
+  }
 }
