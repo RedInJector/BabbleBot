@@ -13,7 +13,7 @@ internal class Program {
         199983920639377410UL,
         282909752042717194UL,
     };
-
+     
     private const string ConfigPath = "config.json";
     private const string ResponsesPath = "responses.json";
     private const string HelpCommand = "!";
@@ -125,10 +125,9 @@ internal class Program {
                 await channel.SendMessageAsync(msg.Content);
             }
             if ( msg.Attachment.Length > 0 ) {
-                for ( int i = 0; i < msg.Attachment.Length; i++ ) {
-                    if ( File.Exists(msg.Attachment) ) {
-                        await channel.SendFileAsync(Path.GetFullPath(Path.Combine("attachments", msg.Attachment)), msg.Content.Length > 0 ? msg.Content : null);
-                    }
+                string attachmentPath = Path.GetFullPath(Path.Combine("attachments", msg.Attachment));
+                if ( File.Exists(attachmentPath) ) {
+                    await channel.SendFileAsync(attachmentPath, msg.Content.Length > 0 ? msg.Content : null);
                 }
             }
         }
