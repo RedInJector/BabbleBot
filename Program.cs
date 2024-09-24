@@ -6,12 +6,14 @@ using Newtonsoft.Json;
 namespace BabbleBot;
 
 internal class Program {
+    private const string ConfigPath = "config.json";
     private const string ResponsesPath = "responses.json";
     private const string HelpCommand = "!";
     private static string DefaultResponse = "Sorry, I don't have help information for that command.";
     private static DiscordSocketClient _client;
     private Dictionary<string, string> _responses = new();
     private readonly string LogFilePath;
+    private Config _config;
 
     public Program() {
         // Generate a unique log file name based on the current date and time
@@ -35,7 +37,16 @@ internal class Program {
         _client.MessageReceived += MessageReceivedAsync;
         LoadResponses();
 
-        var token = JsonConvert.DeserializeObject<Config>(File.ReadAllText("config.json"))!.Token;
+        if ( !File.Exists(ConfigPath) ) {
+            // Create default config
+            _config = new Config();
+            File.WriteAllText(ConfigPath, JsonConvert.SerializeObject(_config, Formatting.Indented));
+            await Log(new LogMessage(LogSeverity.Critical, "Config", "Config not found! Please assign a valid token."));
+            return;
+        }
+
+        _config = JsonConvert.DeserializeObject<Config>(File.ReadAllText(ConfigPath))!;
+        var token = _config.Token;
 
         await _client.LoginAsync(TokenType.Bot, token);
         await _client.StartAsync();
