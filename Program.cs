@@ -8,6 +8,7 @@ namespace BabbleBot;
 internal class Program {
     private const string ResponsesPath = "responses.json";
     private const string HelpCommand = "!help";
+    private static string DefaultResponse = "Sorry, I don't have help information for that command.";
     private static DiscordSocketClient _client;
     private Dictionary<string, string> _responses = new();
     private readonly string LogFilePath;
@@ -66,16 +67,17 @@ internal class Program {
     private void LoadResponses() {
         var json = File.ReadAllText(ResponsesPath);
         _responses = JsonConvert.DeserializeObject<Dictionary<string, string>>(json)!;
+
+        // Preload values
+        if ( _responses.TryGetValue("default", out var defaultResponse) ) {
+            DefaultResponse = defaultResponse;
+        }
     }
 
     private string GetHelpResponse(string command) {
         if ( _responses.TryGetValue(command.ToLower(), out var response) ) {
             return response;
         }
-        else if (_responses.TryGetValue("default", out var defaultResponse))
-        {
-            return defaultResponse;
-        }
-        return "Sorry, I don't have help information for that command.";
+        return DefaultResponse;
     }
 }
