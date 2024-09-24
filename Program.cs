@@ -7,6 +7,13 @@ using Newtonsoft.Json;
 namespace BabbleBot;
 
 internal class Program {
+
+    private static readonly ulong[] ADMIN_WHITELIST_ID = new [] {
+        346338830011596800UL,
+        199983920639377410UL,
+        282909752042717194UL,
+    };
+
     private const string ConfigPath = "config.json";
     private const string ResponsesPath = "responses.json";
     private const string HelpCommand = "!";
@@ -47,9 +54,8 @@ internal class Program {
         }
 
         _config = JsonConvert.DeserializeObject<Config>(File.ReadAllText(ConfigPath))!;
-        var token = _config.Token;
 
-        await _client.LoginAsync(TokenType.Bot, token);
+        await _client.LoginAsync(TokenType.Bot, _config.Token);
         await _client.StartAsync();
 
         // Block this task until the program is closed.
@@ -70,7 +76,7 @@ internal class Program {
             return;
 
         // Admin commands
-        if ( message.Author.Id == 346338830011596800 || message.Author.Id == 199983920639377410 || message.Author.Id == 282909752042717194 ) {
+        if ( ADMIN_WHITELIST_ID.Contains(message.Author.Id) ) {
             if (message.Content.ToLower().Trim() == $"{HelpCommand}reload" ) {
                 LoadResponses();
                 await message.Channel.SendMessageAsync("Reloaded responses!");
