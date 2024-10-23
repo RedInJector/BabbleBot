@@ -24,7 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="attachments\**" LinkBase="attachments\" CopyToOutputDirectory="Always" />
+    <Content Include="Attachments\**" LinkBase="attachments\" CopyToOutputDirectory="Always" />
   </ItemGroup>
 
 </Project>

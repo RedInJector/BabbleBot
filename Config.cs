@@ -1,4 +1,4 @@
-﻿namespace Babble_Bot;
+﻿namespace BabbleBot;
 
 internal class Config
 {

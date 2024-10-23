@@ -1,10 +1,12 @@
-﻿namespace Babble_Bot;
+﻿namespace BabbleBot;
 
-public class Message {
+public class Message
+{
     public string Content { get; set; } = "";
     public string Attachment { get; set; } = "";
 }
 
-public class ResponseMessage {
+public class ResponseMessage
+{
     public Message[] Messages = Array.Empty<Message>();
 }

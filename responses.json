@@ -1,29 +1,93 @@
 {
-  "example": { "Messages": [ { "Content": "This is an example message!" } ] },
-  "complex-example": {
+  "default": {
     "Messages": [
       {
-        "Content": "This message will be sent along an image.",
-        "Attachment": "some-cool-image.png"
-      },
-      { "Content": "This message is sent after the other file." },
-      { "Attachment": "only-attachment.png" }
+        "Content": "Sorry, I haven't a scooby what you meant :dog2:"
+      }
     ]
   },
-
-
-
-  "default": { "Messages": [ { "Content": "Sorry, I haven't a scooby what you meant :dog2:" } ] },
-  "markdown": { "Messages": [ { "Content": "This is a test of Discords markdown properties!\n*italics*\n _italics underscore_\n**bold**\n***bold italics***\n __underscore__\n ~~strikethrough~~\n# subject title\n## secondary title\n### tertiary title\n-# subtext\n[This is a URL](https://google.com)\n- bullet list\n - bullet sublist\n`code block`\n```this is a larger codeblock\nthis is the second line of the larger codeblock```\n> block quote\n||spoiler||" } ] },
-  "docs": { "Messages": [ { "Content": "I think your question can be answered by having a quick check of our [documentation](https://docs.babble.diy/), this covers the basics of both the hardware and software set-up, as well as some commonly asked questions!" } ] },
-  "faq": { "Messages": [ { "Content": "Please have a view of our [FAQ page](https://docs.babble.diy/docs/trobuleshooting)!" } ] },
-  "store": { "Messages": [ { "Content": "https://babble.diy/collections/all" } ] },
-  "shop": { "Messages": [ { "Content": "https://babble.diy/collections/all" } ] },
-  "buy": { "Messages": [ { "Content": "https://babble.diy/collections/all" } ] },
-  "purchase": { "Messages": [ { "Content": "https://babble.diy/collections/all" } ] },
-  "hardware": { "Messages": [ { "Content": "Babble supports the use of any USB camera, however you can also [DIY your own camera](https://docs.babble.diy/docs/hardware). The [**Babble store**](https://babble.diy/collections/all) has everything bundled for you in one nice place!\n\nThe camera we recommend the most is the [OV2640 **160° (850nm)**](https://www.aliexpress.com/i/3256802893361919.html).\nWe also recommend the [OV2640 **120°**](https://www.aliexpress.com/item/3256804729833235.html) as well as the [OV2640 **130°**](https://www.aliexpress.com/item/1005005224975454.html). Please note however, these cameras will require [the removal of the IR filter](https://youtu.be/QYH-FWvDbDc?si=li6NzNnGE_ke9QVV).\n\nYou will also require an **ESP32**. The [SeeedStudio XIAO ESP32-S3](https://seeedstudio.com/XIAO-ESP32S3-Sense-p-5639.html) is the smallest.\nIf you prefer alternative ESP32's, the [Freenove ESP32-S3](https://www.aliexpress.com/item/3256807112147121.html) is a great alternative, although a little larger.\n\nLastly, you will require some form of LED lighting to achive reliable tracking. If you are willing to DIY your own lamp, we reccomend the [LCSC unfocused IR LEDs](https://www.lcsc.com/product-detail/Infrared-IR-LEDs_XINGLIGHT-XL-3216HIRC-850_C965891.html) or the [EAST16084WA1 LEDs](https://www.digikey.com/en/products/detail/everlight-electronics-co-ltd/EAST16084WA1/11200896) (should you prefer visible light) alongside x2 [80Ω 1206 SMD resistors](https://www.digikey.com/en/products/detail/yageo/MFR-25FBF52-357R/12911).\nAlternatively if you do not wish to solder, this off the shelf [USB A 6000K LED lamp](https://www.aliexpress.com/item/1005005708678733.html) also works!\n\nFurther information as well as [mounts for commmon headsets](https://docs.babble.diy/docs/hardware/components/mounts) in our [hardware documentation.](https://docs.babble.diy/docs/hardware)" } ] },
-  "setup": { "Messages": [ { "Content": "To set up your camera in Babble, you will need to enter the correct serial (COM) or UVC (USB webcam) device.\nUsing the software [USBTreeView](https://www.uwe-sieber.de/files/UsbTreeView_x64.zip), search for the device `Espressif USB JTAG/ serial debug unit`. This will then be followed by `COM`. Enter this into the software i.e. `COM5`\n\nFor UVC cameras, set the address to `0` and incrementally increase until the correct camera is found. It may take a few seconds for babble to load the camera preview." } ] },
-  "download": { "Messages": [ { "Content": "The latest version of Babble can be found [here](https://github.com/Project-Babble/ProjectBabble/releases)" } ] },
-  "vrcft": { "Messages": [ { "Content": "To use Babble, you will require [VRCFT](https://github.com/benaclejames/VRCFaceTracking/releases/latest). Download and run the `.msix` or `.appinstaller` file to install VRCFT.\nOnce installed, navigate to the `Module Registry` tab and look for `VRCFT-Babble` by dfgHiatus and click install.\nAlso ensure OSC is enabled in VRChat by navigating to the radial menu (circle hand menu) -> Settings -> OSC -> Enable toggle" } ] },
-  "patreon": { "Messages": [ { "Content": "https://www.patreon.com/user?u=75292817" } ] }
+  "docs": {
+    "Messages": [
+      {
+        "Content": "Our [documentation](https://docs.babble.diy/) covers hardware and software, and has some commonly answered FAQs!"
+      }
+    ]
+  },
+  "faq": {
+    "Messages": [
+      {
+        "Content": "Please have a view of our [FAQ page](https://docs.babble.diy/docs/trobuleshooting)!"
+      }
+    ]
+  },
+  "store": {
+    "Messages": [
+      {
+        "Content": "https://babble.diy/collections/all"
+      }
+    ]
+  },
+  "shop": {
+    "Messages": [
+      {
+        "Content": "https://babble.diy/collections/all"
+      }
+    ]
+  },
+  "buy": {
+    "Messages": [
+      {
+        "Content": "https://babble.diy/collections/all"
+      }
+    ]
+  },
+  "purchase": {
+    "Messages": [
+      {
+        "Content": "https://babble.diy/collections/all"
+      }
+    ]
+  },
+  "software": {
+    "Messages": [
+      {
+        "Content": "https://docs.babble.diy/docs/software"
+      }
+    ]
+  },
+  "hardware": {
+    "Messages": [
+      {
+        "Content": "Babble supports the use of any USB camera, however you can also [DIY your own camera](https://docs.babble.diy/docs/hardware). The [**Babble store**](https://babble.diy/collections/all) has everything bundled for you in one nice place!\n\nThe camera we recommend the most is the [OV2640 **160° (850nm)**](https://www.aliexpress.com/i/3256802893361919.html).\nWe also recommend the [OV2640 **120°**](https://www.aliexpress.com/item/3256804729833235.html) as well as the [OV2640 **130°**](https://www.aliexpress.com/item/1005005224975454.html). Please note however, these cameras will require [the removal of the IR filter](https://youtu.be/QYH-FWvDbDc?si=li6NzNnGE_ke9QVV).\n\nYou will also require an **ESP32**. The [SeeedStudio XIAO ESP32-S3](https://seeedstudio.com/XIAO-ESP32S3-Sense-p-5639.html) is the smallest.\nIf you prefer alternative ESP32's, the [Freenove ESP32-S3](https://www.aliexpress.com/item/3256807112147121.html) is a great alternative, although a little larger.\n\nLastly, you will require some form of LED lighting to achive reliable tracking. If you are willing to DIY your own lamp, we reccomend the [LCSC unfocused IR LEDs](https://www.lcsc.com/product-detail/Infrared-IR-LEDs_XINGLIGHT-XL-3216HIRC-850_C965891.html) or the [EAST16084WA1 LEDs](https://www.digikey.com/en/products/detail/everlight-electronics-co-ltd/EAST16084WA1/11200896) (should you prefer visible light) alongside x2 [80Ω 1206 SMD resistors](https://www.digikey.com/en/products/detail/yageo/MFR-25FBF52-357R/12911).\nAlternatively if you do not wish to solder, this off the shelf [USB A 6000K LED lamp](https://www.aliexpress.com/item/1005005708678733.html) also works!\n\nFurther information as well as [mounts for commmon headsets](https://docs.babble.diy/docs/hardware/components/mounts) in our [hardware documentation.](https://docs.babble.diy/docs/hardware)"
+      }
+    ]
+  },
+  "setup": {
+    "Messages": [
+      {
+        "Content": "To set up your camera in Babble, you will need to enter the correct serial (COM) or UVC (USB webcam) device.\nUsing the software [USBTreeView](https://www.uwe-sieber.de/files/UsbTreeView_x64.zip), search for the device `Espressif USB JTAG/ serial debug unit`. This will then be followed by `COM`. Enter this into the software i.e. `COM5`\n\nFor UVC cameras, set the address to `0` and incrementally increase until the correct camera is found. It may take a few seconds for babble to load the camera preview."
+      }
+    ]
+  },
+  "download": {
+    "Messages": [
+      {
+        "Content": "The latest version of Babble can be found [here](https://github.com/Project-Babble/ProjectBabble/releases)"
+      }
+    ]
+  },
+  "vrcft": {
+    "Messages": [
+      {
+        "Content": "To use Babble, you will require [VRCFT](https://github.com/benaclejames/VRCFaceTracking/releases/latest). Download and run the `.msix` or `.appinstaller` file to install VRCFT.\nOnce installed, navigate to the `Module Registry` tab and look for `VRCFT-Babble` by dfgHiatus and click install.\nAlso ensure OSC is enabled in VRChat by navigating to the radial menu (circle hand menu) -> Settings -> OSC -> Enable toggle"
+      }
+    ]
+  },
+  "patreon": {
+    "Messages": [
+      {
+        "Content": "https://www.patreon.com/user?u=75292817"
+      }
+    ]
+  }
 }
