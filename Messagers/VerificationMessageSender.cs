@@ -6,6 +6,7 @@ using ShopifySharp;
 using ShopifySharp.Filters;
 using LiteDB;
 using Babble_Bot.Enums;
+using ShopifySharp.Lists;
 
 namespace BabbleBot.Messagers;
 
@@ -108,38 +109,94 @@ internal partial class VerificationMessageSender : Messager
     {
         try
         {
-            // First, check if the order has already been redeemed
+            // Check for existing redemption
             var existingRedemption = _redeemedOrdersCollection.FindOne(
-                r => r.OrderNumber == confirmationNumber && 
+                r => r.OrderNumber == confirmationNumber &&
                      r.Email == email
             );
 
             if (existingRedemption != null)
             {
-                // Order already redeemed by another user
                 return "❌ This order has already been redeemed.";
             }
 
             var service = new OrderService(Config.ShopifySite, Config.ShopifyToken);
+            Order matchingOrder = null;
+            const int pageSize = 250;
+            long sinceId = 0;
+            int ordersSearched = 0;
 
-            // Fetch orders with optional filters for performance
-            var ordersResult = await service.ListAsync(new OrderListFilter
+            // First, get the earliest orders to start our search
+            var response = await service.ListAsync(new OrderListFilter
             {
+                Limit = 1,
                 Status = "any",
-                Fields = "id,name,email,financial_status,line_items"
+                Fields = "id"
             });
 
-            // Match the order by confirmation number and email
-            var matchingOrder = ordersResult.Items.FirstOrDefault(order =>
-                order.Name.Equals(confirmationNumber, StringComparison.OrdinalIgnoreCase) &&
-                order.Email.Equals(email, StringComparison.OrdinalIgnoreCase));
+            if (!response.Items.Any())
+            {
+                return "❌ No orders found in the store.";
+            }
+
+            while (matchingOrder == null)
+            {
+                // Fetch next batch of orders
+                var ordersResult = await service.ListAsync(new OrderListFilter
+                {
+                    Limit = pageSize,
+                    SinceId = sinceId,
+                    Status = "any",
+                    Fields = "id,name,email,financial_status,line_items"
+                });
+
+                var orders = ordersResult.Items.ToList();
+
+                // If no more orders to process, break
+                if (!orders.Any())
+                {
+                    break;
+                }
+
+                ordersSearched += orders.Count;
+
+                // Try to find matching order in current page
+                matchingOrder = orders.FirstOrDefault(order =>
+                    order.Name.Equals("#" + confirmationNumber, StringComparison.OrdinalIgnoreCase) &&
+                    order.Email.Equals(email, StringComparison.OrdinalIgnoreCase));
+
+                if (matchingOrder != null)
+                {
+                    await Utils.Log(new LogMessage(
+                        LogSeverity.Info,
+                        "Purchase Verification",
+                        $"Found order after searching through {ordersSearched} orders."
+                    ));
+                    break;
+                }
+
+                // Update sinceId for next page (using the last order's ID)
+                sinceId = orders.Last().Id.Value;
+
+                // Log progress every 1000 orders
+                if (ordersSearched % 1000 == 0)
+                {
+                    await Utils.Log(new LogMessage(
+                        LogSeverity.Info,
+                        "Purchase Verification",
+                        $"Searched through {ordersSearched} orders..."
+                    ));
+                }
+
+                // Optional: Add delay to respect rate limits
+                await Task.Delay(100); // 100ms delay between requests
+            }
 
             if (matchingOrder != null)
             {
                 var orderedProducts = matchingOrder.LineItems.Select(item => item.Name).ToList();
                 var highestTier = DetermineHighestTier(orderedProducts);
 
-                // Create redemption record
                 var redemption = new RedeemedOrder
                 {
                     OrderNumber = confirmationNumber,
@@ -150,7 +207,6 @@ internal partial class VerificationMessageSender : Messager
                     OrderedProducts = orderedProducts
                 };
 
-                // Insert redemption record
                 _redeemedOrdersCollection.Insert(redemption);
 
                 // Attempt to assign role
@@ -163,15 +219,14 @@ internal partial class VerificationMessageSender : Messager
             }
             else
             {
-                return "❌ Purchase not found. Please ensure the order number and email are correct.";
+                return $"❌ Purchase not found. Please ensure the order number and email are correct.";
             }
         }
         catch (Exception ex)
         {
-            // Log the actual exception for debugging
             await Utils.Log(new LogMessage(
-                LogSeverity.Error, 
-                "Purchase Verification", 
+                LogSeverity.Error,
+                "Purchase Verification",
                 $"Verification error: {ex.Message}"
             ));
 
