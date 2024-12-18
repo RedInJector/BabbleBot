@@ -43,11 +43,12 @@ internal class BabbleBot
 
         ChatMessageSender chatMessageSender = new ChatMessageSender(_config, _client);
         SlashCommandSender slashCommandSender = new SlashCommandSender(_config, _client);
+        DirectMessageSender directMessageSender = new DirectMessageSender(_config, _client);
     }
     
     public async Task MainAsync()
     {
-        await _client.LoginAsync(TokenType.Bot, _config.Token);
+        await _client.LoginAsync(TokenType.Bot, _config.DiscordToken);
         await _client.StartAsync();
 
         // Block this task until the program is closed.

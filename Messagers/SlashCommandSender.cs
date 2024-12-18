@@ -17,7 +17,7 @@ internal class SlashCommandSender : Messager
     {
         // Babble Discord 974302302179557416
         // Test Discord 1270160076035850342
-        const ulong BabbleGuild = 974302302179557416;  
+        const ulong BabbleGuild = 1270160076035850342;  
         var guild = Client.GetGuild(BabbleGuild);
 
         foreach (var response in Responses)
