@@ -15,20 +15,19 @@ internal class SlashCommandSender : Messager
 
     public async Task Client_Ready()
     {
-        // Babble Discord 974302302179557416
-        // Test Discord 1270160076035850342
-        const ulong BabbleGuild = 1270160076035850342;  
-        var guild = Client.GetGuild(BabbleGuild);
-
         foreach (var response in Responses)
         {
-            var guildCommand = new SlashCommandBuilder();
-            guildCommand.WithName(response.Key);
-            guildCommand.WithDescription("Ask the BabbleBot a question!");
+            var command = new SlashCommandBuilder()
+                .WithName(response.Key)
+                .WithDescription("Ask the BabbleBot a question!")
+                .WithContextTypes(
+                    InteractionContextType.Guild,
+                    InteractionContextType.BotDm,
+                    InteractionContextType.PrivateChannel );
 
             try
             {
-                await guild.CreateApplicationCommandAsync(guildCommand.Build());
+                await Client.CreateGlobalApplicationCommandAsync(command.Build());
             }
             catch (ApplicationCommandException exception)
             {
@@ -40,6 +39,8 @@ internal class SlashCommandSender : Messager
 
     private async Task SlashCommandHandler(SocketSlashCommand command)
     {
+        if (command.Data.Name == "verify-order") return;
+
         var response = GetHelpResponse(command.Data.Name);
         
         foreach (var m in response.Messages)

@@ -23,7 +23,8 @@ internal class BabbleBot
 
         var discordSocketconfig = new DiscordSocketConfig
         {
-            GatewayIntents = GatewayIntents.Guilds | GatewayIntents.GuildMessages | GatewayIntents.MessageContent
+            GatewayIntents = GatewayIntents.All,
+            UseInteractionSnowflakeDate = false, // Don't timeout if an order lookup takes more than 3 seconds
         };
 
         _client = new DiscordSocketClient(discordSocketconfig);
@@ -42,8 +43,8 @@ internal class BabbleBot
         _config = JsonConvert.DeserializeObject<Config>(File.ReadAllText(configFile))!;
 
         ChatMessageSender chatMessageSender = new ChatMessageSender(_config, _client);
+        VerificationMessageSender directMessageSender = new VerificationMessageSender(_config, _client);
         SlashCommandSender slashCommandSender = new SlashCommandSender(_config, _client);
-        DirectMessageSender directMessageSender = new DirectMessageSender(_config, _client);
     }
     
     public async Task MainAsync()
