@@ -13,7 +13,7 @@ internal class SlashCommandSender : Messager
         Client.SlashCommandExecuted += SlashCommandHandler;
     }
 
-    public async Task Client_Ready()
+    private async Task Client_Ready()
     {
         foreach (var response in Responses)
         {
@@ -39,7 +39,8 @@ internal class SlashCommandSender : Messager
 
     private async Task SlashCommandHandler(SocketSlashCommand command)
     {
-        if (command.Data.Name == "verify-order") return;
+        if (command.Data.Name.StartsWith("verify-order")) 
+            return;
 
         var response = GetHelpResponse(command.Data.Name);
         

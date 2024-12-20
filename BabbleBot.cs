@@ -1,6 +1,6 @@
-﻿using BabbleBot.Messagers;
+﻿using System.Reflection;
+using BabbleBot.Messagers;
 using Discord;
-using Discord.Interactions;
 using Discord.WebSocket;
 using Newtonsoft.Json;
 
@@ -8,9 +8,8 @@ namespace BabbleBot;
 
 internal class BabbleBot
 {
-    private DiscordSocketClient _client;
-    private InteractionService _interactionService;
-    private Config _config;
+    private readonly DiscordSocketClient _client;
+    private readonly Config _config;
     
     public BabbleBot(string logPath, string configFile)
     {
@@ -21,13 +20,13 @@ internal class BabbleBot
         var logFilePath = Path.Combine(logPath, $"bot_{timestamp}.log");
         Utils.LogPath = logFilePath;
 
-        var discordSocketconfig = new DiscordSocketConfig
+        var discordSocketConfig = new DiscordSocketConfig
         {
             GatewayIntents = GatewayIntents.All,
             UseInteractionSnowflakeDate = false, // Don't timeout if an order lookup takes more than 3 seconds
         };
 
-        _client = new DiscordSocketClient(discordSocketconfig);
+        _client = new DiscordSocketClient(discordSocketConfig);
         _client.SetStatusAsync(UserStatus.Online);
         _client.Log += Utils.Log;
 
@@ -41,10 +40,39 @@ internal class BabbleBot
         }
 
         _config = JsonConvert.DeserializeObject<Config>(File.ReadAllText(configFile))!;
+        InitializeMessagers();
+    }
+    
+    private void InitializeMessagers()
+    {
+        // Get all types that inherit from Messager
+        var messagerTypes = Assembly.GetExecutingAssembly()
+            .GetTypes()
+            .Where(t => t.IsClass && !t.IsAbstract && t.IsSubclassOf(typeof(Messager)));
 
-        ChatMessageSender chatMessageSender = new ChatMessageSender(_config, _client);
-        VerificationMessageSender directMessageSender = new VerificationMessageSender(_config, _client);
-        SlashCommandSender slashCommandSender = new SlashCommandSender(_config, _client);
+        foreach (var type in messagerTypes)
+        {
+            try
+            {
+                // Find constructor that takes Config and DiscordSocketClient
+                var constructor = type.GetConstructor(new[] { typeof(Config), typeof(DiscordSocketClient) });
+                if (constructor != null)
+                {
+                    var messager = (Messager)constructor.Invoke(new object[] { _config, _client });
+                    Utils.Log(new LogMessage(LogSeverity.Info, "Messager", $"Initialized {type.Name}"));
+                }
+                else
+                {
+                    Utils.Log(new LogMessage(LogSeverity.Warning, "Messager", 
+                        $"Failed to find appropriate constructor for {type.Name}"));
+                }
+            }
+            catch (Exception ex)
+            {
+                Utils.Log(new LogMessage(LogSeverity.Error, "Messager", 
+                    $"Failed to initialize {type.Name}: {ex.Message}"));
+            }
+        }
     }
     
     public async Task MainAsync()

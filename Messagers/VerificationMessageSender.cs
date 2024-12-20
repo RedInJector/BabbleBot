@@ -12,7 +12,6 @@ namespace BabbleBot.Messagers;
 
 internal partial class VerificationMessageSender : Messager
 {
-    private const ulong BabbleGuild = 974302302179557416;
     private readonly LiteDatabase _database;
     private readonly ILiteCollection<RedeemedOrder> _redeemedOrdersCollection;
 
@@ -87,24 +86,24 @@ internal partial class VerificationMessageSender : Messager
 
     public async Task SlashCommandHandler(SocketSlashCommand command)
     {
-        if (command.Data.Name == "verify-order")
-        {
-            // Extract order number and email from command options
-            var orderNumber = command.Data.Options.First(opt => opt.Name == "order-number").Value.ToString()!;
-            var email = command.Data.Options.First(opt => opt.Name == "email").Value.ToString()!;
+        if (command.Data.Name != "verify-order")
+            return;
+        
+        var orderNumber = command.Data.Options.First(opt => opt.Name == "order-number").Value.ToString()!;
+        var email = command.Data.Options.First(opt => opt.Name == "email").Value.ToString()!;
 
-            // Verify the purchase
-            var verificationResult = await VerifyPurchaseAsync(
-                orderNumber, 
-                email, 
-                command.User.Id
-            );
+        // Verify the purchase
+        var verificationResult = await VerifyPurchaseAsync(
+            orderNumber,
+            email,
+            command.User.Id
+        );
 
-            // Respond to the command
-            await command.RespondAsync(verificationResult, ephemeral: true);
-        }
+        // Respond to the command
+        await command.RespondAsync(verificationResult, ephemeral: true);
     }
 
+    // Extract order number and email from command options
     private async Task<string> VerifyPurchaseAsync(string confirmationNumber, string email, ulong discordUserId)
     {
         try

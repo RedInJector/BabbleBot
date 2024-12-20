@@ -12,7 +12,9 @@
     <PackageReference Include="Discord.Net" Version="3.15.3" />
     <PackageReference Include="FuzzySharp" Version="2.0.2" />
     <PackageReference Include="LiteDB" Version="5.0.21" />
+    <PackageReference Include="QRCodeDecoderLibrary" Version="2.0.1" />
     <PackageReference Include="ShopifySharp" Version="6.21.0" />
+    <PackageReference Include="System.Drawing.Common" Version="9.0.0" />
   </ItemGroup>
 
   <ItemGroup>
