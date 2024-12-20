@@ -1,12 +1,12 @@
+using Babble_Bot.Enums;
 using Discord;
 using Discord.Net;
 using Discord.WebSocket;
+using LiteDB;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using ShopifySharp;
 using ShopifySharp.Filters;
-using LiteDB;
-using Babble_Bot.Enums;
-using ShopifySharp.Lists;
 
 namespace BabbleBot.Messagers;
 
@@ -47,7 +47,7 @@ internal partial class VerificationMessageSender : Messager
         }
     };
 
-    public VerificationMessageSender(Config config, DiscordSocketClient client) : base(config, client)
+    public VerificationMessageSender(Config config, DiscordSocketClient client, ILogger logger) : base(config, client, logger)
     {
         Client.Ready += Client_Ready;
         Client.SlashCommandExecuted += SlashCommandHandler;
@@ -80,7 +80,7 @@ internal partial class VerificationMessageSender : Messager
         catch (ApplicationCommandException exception)
         {
             var json = JsonConvert.SerializeObject(exception.Errors, Formatting.Indented);
-            await Utils.Log(new LogMessage(LogSeverity.Critical, "Order Verification", json));
+            Logger.LogCritical(json);
         }
     }
 
@@ -166,26 +166,12 @@ internal partial class VerificationMessageSender : Messager
 
                 if (matchingOrder != null)
                 {
-                    await Utils.Log(new LogMessage(
-                        LogSeverity.Info,
-                        "Purchase Verification",
-                        $"Found order after searching through {ordersSearched} orders."
-                    ));
+                    Logger.LogInformation($"Found order after searching through {ordersSearched} orders.");     
                     break;
                 }
 
                 // Update sinceId for next page (using the last order's ID)
                 sinceId = orders.Last().Id.Value;
-
-                // Log progress every 1000 orders
-                if (ordersSearched % 1000 == 0)
-                {
-                    await Utils.Log(new LogMessage(
-                        LogSeverity.Info,
-                        "Purchase Verification",
-                        $"Searched through {ordersSearched} orders..."
-                    ));
-                }
 
                 // Optional: Add delay to respect rate limits
                 await Task.Delay(100); // 100ms delay between requests
@@ -223,11 +209,7 @@ internal partial class VerificationMessageSender : Messager
         }
         catch (Exception ex)
         {
-            await Utils.Log(new LogMessage(
-                LogSeverity.Error,
-                "Purchase Verification",
-                $"Verification error: {ex.Message}"
-            ));
+            Logger.LogError($"Verification error: {ex.Message}");
 
             return $"❌ An error occurred while verifying the purchase. Please try again.";
         }
@@ -281,11 +263,7 @@ internal partial class VerificationMessageSender : Messager
         }
         catch (Exception ex)
         {
-            await Utils.Log(new LogMessage(
-                LogSeverity.Error,
-                "Role Assignment",
-                $"Role assignment error: {ex.Message}"
-            ));
+            Logger.LogError($"Role assignment error: {ex.Message}");
 
             return $"❌ Error assigning role: {ex.Message}";
         }

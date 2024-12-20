@@ -1,5 +1,6 @@
 ﻿using Discord.WebSocket;
 using FuzzySharp;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
 namespace BabbleBot.Messagers;
@@ -10,6 +11,7 @@ internal abstract class Messager
     public DiscordSocketClient Client { get; set; }
     public Dictionary<string, ResponseMessage> Responses;
     protected const ulong BabbleGuild = 974302302179557416;
+    protected ILogger Logger;
 
     /// <summary>
     /// Discord user IDs for dfgHiatus, RamesTheGeneric, and SummerSky
@@ -28,10 +30,11 @@ internal abstract class Messager
         }
     };
 
-    public Messager(Config config, DiscordSocketClient client)
+    public Messager(Config config, DiscordSocketClient client, ILogger logger)
     {
         Config = config;
         Client = client;
+        Logger = logger;
         LoadResponses();
     }
 

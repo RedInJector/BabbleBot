@@ -1,4 +1,5 @@
 ﻿using Discord.WebSocket;
+using Microsoft.Extensions.Logging;
 
 namespace BabbleBot.Messagers;
 
@@ -6,7 +7,7 @@ internal class ChatMessageSender : Messager
 {
     private const string HelpCommandPrefix = "!";
 
-    public ChatMessageSender(Config config, DiscordSocketClient client) : base(config, client)
+    public ChatMessageSender(Config config, DiscordSocketClient client, ILogger logger) : base(config, client, logger)
     {
         Client.MessageReceived += MessageReceivedAsync;
         LoadResponses();
