@@ -1,18 +1,17 @@
+using Babble_Bot.Enums;
 using Discord;
 using Discord.Net;
 using Discord.WebSocket;
+using LiteDB;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using ShopifySharp;
 using ShopifySharp.Filters;
-using LiteDB;
-using Babble_Bot.Enums;
-using ShopifySharp.Lists;
 
 namespace BabbleBot.Messagers;
 
 internal partial class VerificationMessageSender : Messager
 {
-    private const ulong BabbleGuild = 974302302179557416;
     private readonly LiteDatabase _database;
     private readonly ILiteCollection<RedeemedOrder> _redeemedOrdersCollection;
 
@@ -48,7 +47,7 @@ internal partial class VerificationMessageSender : Messager
         }
     };
 
-    public VerificationMessageSender(Config config, DiscordSocketClient client) : base(config, client)
+    public VerificationMessageSender(Config config, DiscordSocketClient client, ILogger logger) : base(config, client, logger)
     {
         Client.Ready += Client_Ready;
         Client.SlashCommandExecuted += SlashCommandHandler;
@@ -81,30 +80,30 @@ internal partial class VerificationMessageSender : Messager
         catch (ApplicationCommandException exception)
         {
             var json = JsonConvert.SerializeObject(exception.Errors, Formatting.Indented);
-            await Utils.Log(new LogMessage(LogSeverity.Critical, "Order Verification", json));
+            Logger.LogCritical(json);
         }
     }
 
     public async Task SlashCommandHandler(SocketSlashCommand command)
     {
-        if (command.Data.Name == "verify-order")
-        {
-            // Extract order number and email from command options
-            var orderNumber = command.Data.Options.First(opt => opt.Name == "order-number").Value.ToString()!;
-            var email = command.Data.Options.First(opt => opt.Name == "email").Value.ToString()!;
+        if (command.Data.Name != "verify-order")
+            return;
+        
+        var orderNumber = command.Data.Options.First(opt => opt.Name == "order-number").Value.ToString()!;
+        var email = command.Data.Options.First(opt => opt.Name == "email").Value.ToString()!;
 
-            // Verify the purchase
-            var verificationResult = await VerifyPurchaseAsync(
-                orderNumber, 
-                email, 
-                command.User.Id
-            );
+        // Verify the purchase
+        var verificationResult = await VerifyPurchaseAsync(
+            orderNumber,
+            email,
+            command.User.Id
+        );
 
-            // Respond to the command
-            await command.RespondAsync(verificationResult, ephemeral: true);
-        }
+        // Respond to the command
+        await command.RespondAsync(verificationResult, ephemeral: true);
     }
 
+    // Extract order number and email from command options
     private async Task<string> VerifyPurchaseAsync(string confirmationNumber, string email, ulong discordUserId)
     {
         try
@@ -167,26 +166,12 @@ internal partial class VerificationMessageSender : Messager
 
                 if (matchingOrder != null)
                 {
-                    await Utils.Log(new LogMessage(
-                        LogSeverity.Info,
-                        "Purchase Verification",
-                        $"Found order after searching through {ordersSearched} orders."
-                    ));
+                    Logger.LogInformation($"Found order after searching through {ordersSearched} orders.");     
                     break;
                 }
 
                 // Update sinceId for next page (using the last order's ID)
                 sinceId = orders.Last().Id.Value;
-
-                // Log progress every 1000 orders
-                if (ordersSearched % 1000 == 0)
-                {
-                    await Utils.Log(new LogMessage(
-                        LogSeverity.Info,
-                        "Purchase Verification",
-                        $"Searched through {ordersSearched} orders..."
-                    ));
-                }
 
                 // Optional: Add delay to respect rate limits
                 await Task.Delay(100); // 100ms delay between requests
@@ -224,11 +209,7 @@ internal partial class VerificationMessageSender : Messager
         }
         catch (Exception ex)
         {
-            await Utils.Log(new LogMessage(
-                LogSeverity.Error,
-                "Purchase Verification",
-                $"Verification error: {ex.Message}"
-            ));
+            Logger.LogError($"Verification error: {ex.Message}");
 
             return $"❌ An error occurred while verifying the purchase. Please try again.";
         }
@@ -282,11 +263,7 @@ internal partial class VerificationMessageSender : Messager
         }
         catch (Exception ex)
         {
-            await Utils.Log(new LogMessage(
-                LogSeverity.Error,
-                "Role Assignment",
-                $"Role assignment error: {ex.Message}"
-            ));
+            Logger.LogError($"Role assignment error: {ex.Message}");
 
             return $"❌ Error assigning role: {ex.Message}";
         }
