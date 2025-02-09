@@ -1,4 +1,5 @@
-﻿using Discord;
+﻿using BabbleBot.Helpers;
+using Discord;
 using Discord.Net;
 using Discord.WebSocket;
 using Microsoft.Extensions.Logging;
@@ -40,8 +41,7 @@ internal class SlashCommandSender : Messager
 
     private async Task SlashCommandHandler(SocketSlashCommand command)
     {
-        if (command.Data.Name.StartsWith("verify-order")) 
-            return;
+        if (command.Data.Name.StartsWith("verify-order")) return;
 
         var response = GetHelpResponse(command.Data.Name);
         
