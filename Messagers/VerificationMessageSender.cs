@@ -312,11 +312,9 @@ internal class VerificationMessageSender : Messager, IDisposable
         }
         catch (Exception ex)
         {
-            await Utils.Log(new LogMessage(
-                LogSeverity.Error,
-                "Purchase Verification",
+            Logger.LogError(
                 $"Verification error: {ex.Message}"
-            ));
+            );
 
             return $"❌ An error occurred while verifying the purchase. Please try again.";
         }
@@ -424,11 +422,9 @@ internal class VerificationMessageSender : Messager, IDisposable
         }
         catch (Exception ex)
         {
-            await Utils.Log(new LogMessage(
-                LogSeverity.Error,
-                "Role Assignment",
+            Logger.LogError(
                 $"Role assignment error: {ex.Message}"
-            ));
+            );
 
             return $"❌ Error assigning role: {ex.Message}";
         }
