@@ -2,19 +2,20 @@
 using Discord;
 using Discord.Net;
 using Discord.WebSocket;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
 namespace BabbleBot.Messagers;
 
 internal class SlashCommandSender : Messager
 {
-    public SlashCommandSender(Config config, DiscordSocketClient client) : base(config, client)
+    public SlashCommandSender(Config config, DiscordSocketClient client, ILogger logger) : base(config, client, logger)
     {
         Client.Ready += Client_Ready;
         Client.SlashCommandExecuted += SlashCommandHandler;
     }
 
-    public async Task Client_Ready()
+    private async Task Client_Ready()
     {
         foreach (var response in Responses)
         {
@@ -33,7 +34,7 @@ internal class SlashCommandSender : Messager
             catch (ApplicationCommandException exception)
             {
                 var json = JsonConvert.SerializeObject(exception.Errors, Formatting.Indented);
-                await Utils.Log(new LogMessage(LogSeverity.Critical, "Slash Commands", json));
+                Logger.LogCritical("Slash Commands", json);
             }
         }
     }
