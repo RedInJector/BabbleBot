@@ -1,4 +1,4 @@
-﻿namespace Babble_Bot.Enums;
+﻿namespace BabbleBot.Enums;
 
 internal enum ProductTier
 {

@@ -1,4 +1,5 @@
-﻿using BabbleBot.Messagers;
+﻿using BabbleBot.Helpers;
+using BabbleBot.Messagers;
 using Discord;
 using Discord.Interactions;
 using Discord.WebSocket;
@@ -42,6 +43,7 @@ internal class BabbleBot
 
         _config = JsonConvert.DeserializeObject<Config>(File.ReadAllText(configFile))!;
 
+        // Dynamically creating these via reflection doesn't seem to be working
         ChatMessageSender chatMessageSender = new ChatMessageSender(_config, _client);
         VerificationMessageSender directMessageSender = new VerificationMessageSender(_config, _client);
         SlashCommandSender slashCommandSender = new SlashCommandSender(_config, _client);

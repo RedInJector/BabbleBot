@@ -1,6 +1,6 @@
 ﻿using Discord;
 
-namespace BabbleBot;
+namespace BabbleBot.Helpers;
 
 internal class Utils
 {
