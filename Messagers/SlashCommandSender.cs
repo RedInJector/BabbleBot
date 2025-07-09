@@ -9,7 +9,7 @@ namespace BabbleBot.Messagers;
 
 internal class SlashCommandSender : Messager
 {
-    public SlashCommandSender(Config config, DiscordSocketClient client, ILogger logger) : base(config, client, logger)
+    public SlashCommandSender(Config config, DiscordSocketClient client, ILogger<SlashCommandSender> logger) : base(config, client, logger)
     {
         Client.Ready += Client_Ready;
         Client.SlashCommandExecuted += SlashCommandHandler;
@@ -31,10 +31,10 @@ internal class SlashCommandSender : Messager
             {
                 await Client.CreateGlobalApplicationCommandAsync(command.Build());
             }
-            catch (ApplicationCommandException exception)
+            catch (HttpException exception)
             {
                 var json = JsonConvert.SerializeObject(exception.Errors, Formatting.Indented);
-                Logger.LogCritical("Slash Commands", json);
+                Logger.LogCritical("Slash Commands {}", json);
             }
         }
     }

@@ -6,7 +6,6 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using ShopifySharp;
 using ShopifySharp.Filters;
-using LiteDB;
 using BabbleBot.Enums;
 using BabbleBot.Helpers;
 using BabbleBot.Messagers.Verification;
@@ -57,7 +56,7 @@ internal class VerificationMessageSender : Messager, IDisposable
         }
     };
 
-    public VerificationMessageSender(Config config, DiscordSocketClient client, ILogger logger) : base(config, client, logger)
+    public VerificationMessageSender(Config config, DiscordSocketClient client, ILogger<VerificationMessageSender> logger) : base(config, client, logger)
     {
         const string redemptions = "./redemptions.db";
         const string redemptionsThirdParty = "./redemptionsThirdParty.db";
@@ -123,14 +122,14 @@ internal class VerificationMessageSender : Messager, IDisposable
         try
         {
             // Make this command Babble Discord only
-            var guild = Client.GetGuild(BabbleGuild);
+            var guild = Client.GetGuild(Config.guildId);
             await guild.CreateApplicationCommandAsync(command.Build());
             await guild.CreateApplicationCommandAsync(thirdPartyCommand.Build());
         }
-        catch (ApplicationCommandException exception)
+        catch (HttpException exception)
         {
             var json = JsonConvert.SerializeObject(exception.Errors, Formatting.Indented);
-            Logger.LogCritical(json);
+            Logger.LogCritical("{}", json);
         }
     }
 
@@ -230,7 +229,7 @@ internal class VerificationMessageSender : Messager, IDisposable
 
                 if (matchingOrder != null)
                 {
-                    Logger.LogInformation($"Found order after searching through {ordersSearched} orders.");     
+                    Logger.LogInformation("Found order after searching through {} orders.", ordersSearched);     
                     break;
                 }
 
@@ -273,7 +272,7 @@ internal class VerificationMessageSender : Messager, IDisposable
         }
         catch (Exception ex)
         {
-            Logger.LogError($"Verification error: {ex.Message}");
+            Logger.LogError("Verification error: {}", ex.Message);
 
             return $"❌ An error occurred while verifying the purchase. Please try again.";
         }
@@ -312,9 +311,7 @@ internal class VerificationMessageSender : Messager, IDisposable
         }
         catch (Exception ex)
         {
-            Logger.LogError(
-                $"Verification error: {ex.Message}"
-            );
+            Logger.LogError("Verification error: {}", ex.Message);
 
             return $"❌ An error occurred while verifying the purchase. Please try again.";
         }
@@ -324,7 +321,7 @@ internal class VerificationMessageSender : Messager, IDisposable
     {
         try
         {
-            var guild = Client.GetGuild(BabbleGuild);
+            var guild = Client.GetGuild(Config.guildId);
 
             if (guild == null)
             {
@@ -353,7 +350,7 @@ internal class VerificationMessageSender : Messager, IDisposable
 
             // Remove any existing tier roles
             var existingTierRoles = guildUser.Roles
-                .Where(r => _tierRoleIds.Values.Contains(r.Id))
+                .Where(r => _tierRoleIds.ContainsValue(r.Id))
                 .ToList();
 
             foreach (var existingRole in existingTierRoles)
@@ -368,7 +365,7 @@ internal class VerificationMessageSender : Messager, IDisposable
         }
         catch (Exception ex)
         {
-            Logger.LogError($"Role assignment error: {ex.Message}");
+            Logger.LogError("Role assignment error: {}", ex.Message);
 
             return $"❌ Error assigning role: {ex.Message}";
         }
@@ -378,7 +375,7 @@ internal class VerificationMessageSender : Messager, IDisposable
     {
         try
         {
-            var guild = Client.GetGuild(BabbleGuild);
+            var guild = Client.GetGuild(Config.guildId);
 
             if (guild == null)
             {
@@ -407,7 +404,7 @@ internal class VerificationMessageSender : Messager, IDisposable
 
             // Remove any existing tier roles
             var existingTierRoles = guildUser.Roles
-                .Where(r => _tierRoleIds.Values.Contains(r.Id))
+                .Where(r => _tierRoleIds.ContainsValue(r.Id))
                 .ToList();
 
             foreach (var existingRole in existingTierRoles)
@@ -423,7 +420,7 @@ internal class VerificationMessageSender : Messager, IDisposable
         catch (Exception ex)
         {
             Logger.LogError(
-                $"Role assignment error: {ex.Message}"
+               "Role assignment error: {}", ex.Message
             );
 
             return $"❌ Error assigning role: {ex.Message}";

@@ -7,7 +7,7 @@ internal class ChatMessageSender : Messager
 {
     private const string HelpCommandPrefix = "!";
 
-    public ChatMessageSender(Config config, DiscordSocketClient client, ILogger logger) : base(config, client, logger)
+    public ChatMessageSender(Config config, DiscordSocketClient client, ILogger<ChatMessageSender> logger) : base(config, client, logger)
     {
         Client.MessageReceived += MessageReceivedAsync;
         LoadResponses();
@@ -21,7 +21,7 @@ internal class ChatMessageSender : Messager
             return;
 
         // Admin commands
-        if (ADMIN_WHITELIST_ID.Contains(message.Author.Id))
+        if (Config.admins.Contains(message.Author.Id))
         {
             if (message.Content.ToLower().Trim() == $"{HelpCommandPrefix}{ReloadCommand}") // !reload
             {
@@ -33,7 +33,7 @@ internal class ChatMessageSender : Messager
 
         if (message.Content.StartsWith(HelpCommandPrefix))
         {
-            var command = message.Content.Substring(HelpCommandPrefix.Length).Trim();
+            var command = message.Content[HelpCommandPrefix.Length..].Trim();
             var response = GetHelpResponse(command.ToLower());
             await SendResponseMessageAsync(message.Channel, response);
         }
